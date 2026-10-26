@@ -1,6 +1,12 @@
 import os
+import sys
 from pathlib import Path
 from typing import Dict, Any
+
+BASE_DIR = Path(__file__).resolve().parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -136,7 +142,9 @@ def predict_repo_abandonment(req: RepoRequest):
 # Mount static files from frontend build if available
 FRONTEND_DIST = BASE_DIR.parent / "frontend" / "dist"
 if FRONTEND_DIST.exists():
-    app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
+    assets_dir = FRONTEND_DIST / "assets"
+    if assets_dir.exists():
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
     
     @app.get("/{full_path:path}")
     def serve_frontend(full_path: str):
@@ -153,3 +161,8 @@ else:
             "health_check": "GET /api/health",
             "frontend_status": "Building..."
         }
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=port, reload=False)

@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Python artifacts
+__pycache__/
+backend/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+env/
+venv/
+ENV/
+
+# Environment variables (do not commit secret tokens)
+.env
+.env.local
+.env.*.local
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
